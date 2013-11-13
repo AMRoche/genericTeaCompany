@@ -21,10 +21,9 @@ var rotate,
 	speedFactor = 50;
 	//<- factor of gravity to negate on impulse. Being multiplied by mass.
 	//in ball create method, friction, restitution and mass make for good fun.
-
 window.init = function () {
 	"use strict";
-
+	if(gapi.hangout.av.isLocalParticipantVideoMirrored()){gapi.hangout.av.setLocalParticipantVideoMirrored(true);}
 	var //baseUrl = document.getElementsByTagName('base').length ? document.getElementsByTagName('base')[0].href : '',
 		baseUrl = 'http://dev.welikepie.com/teaTime/build/',
 		game = (function (undefined) {
@@ -278,12 +277,8 @@ window.init = function () {
 				0.2: 10
 			},
 			'last_scale': null,
-
 			'ball_overlay': null,
 			'ball_overlay_res': null,
-			'ball_shadow': null,
-			'ball_shadow_res': null,
-
 			'area_width': null,
 			'area_height': null,
 			'unit_width': null,
@@ -406,7 +401,7 @@ window.init = function () {
 					physics.ball = physics.world.CreateBody(body_def);
 					physics.ball.CreateFixture(fixture_def);
 
-					_.each(['ball_overlay', 'ball_shadow'], function (type) {
+					_.each(['ball_overlay'], function (type) {
 
 						var resource = type + '_res';
 
@@ -472,8 +467,6 @@ window.init = function () {
 					clearTimeout(physics.rotateTimer);
 					physics.ball_overlay.dispose();
 					physics.ball_overlay = null;
-					physics.ball_shadow.dispose();
-					physics.ball_shadow = null;
 				}
 				if (physics.ball) {
 					clearTimeout(physics.rotateTimer);
@@ -542,9 +535,8 @@ window.init = function () {
 						physics.bounced = false;
 					}
 
-					if (physics.ball_overlay && physics.ball_shadow) {
+					if (physics.ball_overlay) {
 						physics.ball_overlay.setPosition((ball_pos.x / physics.area_width) - 0.5, (ball_pos.y / physics.area_height) - 0.5);
-						physics.ball_shadow.setPosition((ball_pos.x / physics.area_width) - 0.5, (ball_pos.y / physics.area_height) - 0.5);
 
 					}
 
@@ -583,16 +575,6 @@ window.init = function () {
 							'reference' : gapi.hangout.av.effects.ScaleReference.HEIGHT
 						}
 					}),
-					init_shadow = physics.ball_shadow_res.createOverlay({
-						'position' : {
-							'x' : 0,
-							'y' : 0
-						},
-						'scale' : {
-							'magnitude' : 0,
-							'reference' : gapi.hangout.av.effects.ScaleReference.HEIGHT
-						}
-					}),
 					countdown_func = function countdown_func (index) {
 
 						if ((overlays.countdown.length - 1) > index) {
@@ -607,7 +589,6 @@ window.init = function () {
 						} else {
 							try {
 								init_overlay.setVisible(true);
-								init_shadow.setVisible(true);
 							} catch (e) {}
 							start_time = (new Date()).getTime();
 							window.setTimeout(function() { ballanim_func((new Date()).getTime()); }, 50);
@@ -619,15 +600,11 @@ window.init = function () {
 						if (factor >= 1) {
 
 							try {
-								init_shadow.setVisible(false);
 								init_overlay.setVisible(false);
 								init_overlay.dispose();
-								init_shadow.dispose();
 								init_overlay = null;
-								init_shadow = null;
-								if (physics.ball_overlay && physics.ball_shadow) {
+								if (physics.ball_overlay) {
 									physics.ball_overlay.setVisible(true);
-									physics.ball_shadow.setVisible(true);
 								}
 							} catch (e) {}
 
@@ -647,7 +624,7 @@ window.init = function () {
 						} else {
 							try {
 								init_overlay.setScale(factor * 0.75, gapi.hangout.av.effects.ScaleReference.HEIGHT);
-								init_shadow.setScale(factor * 0.75, gapi.hangout.av.effects.ScaleReference.HEIGHT);
+								
 							} catch (e) {}
 
 							window.setTimeout(function() { ballanim_func((new Date()).getTime()); }, 50);
@@ -660,12 +637,11 @@ window.init = function () {
 				physics.createTracker();
 				physics.createBall();
 				try {
-					if (physics.ball_overlay && physics.ball_shadow) {
+					if (physics.ball_overlay) {
 						physics.ball_overlay.setVisible(false);
-						physics.ball_shadow.setVisible(false);
 					}
 					init_overlay.setVisible(false);
-					init_shadow.setVisible(false);
+			
 				} catch (e) {}
 				countdown_func(3);
 
@@ -754,7 +730,7 @@ window.init = function () {
 			bean.on(document.getElementsByTagName('button')[0], 'click', function (ev) {
 				ev.preventDefault();
 				ev.stopPropagation();
-				if (physics.ball_overlay_res.isLoaded() && physics.ball_shadow_res.isLoaded()) {
+				if (physics.ball_overlay_res.isLoaded()) {
 					if (
 						(game.state.get() === game.state.IDLE) ||
 						(game.state.get() === game.state.ENDED)
@@ -782,8 +758,6 @@ window.init = function () {
 
 			// Load image resources
 			physics.ball_overlay_res = gapi.hangout.av.effects.createImageResource(baseUrl + 'images/teabag.png');
-			physics.ball_shadow_res = gapi.hangout.av.effects.createImageResource(baseUrl + 'images/ballShadow.png');
-
 			overlays.lost.resource = gapi.hangout.av.effects.createImageResource(baseUrl + 'images/overlay_lost.png');
 			overlays.lost.resource.onLoad.add(function createOverlay(ev) {
 				if (ev.isLoaded) {
@@ -820,7 +794,7 @@ window.init = function () {
 
 				obj.resource = gapi.hangout.av.effects.createImageResource(baseUrl + 'images/overlay_count' + index + '.png');
 				obj.resource.onLoad.add(function createOverlay(ev) {
-					if (ev.isLoaded) {
+					if (ev.isLoaded) {//OHSEVEN //camera_flipped
 						obj.overlay = obj.resource.createOverlay({
 							'position' : {
 								'x' : 0,
