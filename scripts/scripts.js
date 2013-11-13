@@ -26,7 +26,7 @@ window.init = function () {
 	"use strict";
 
 	var //baseUrl = document.getElementsByTagName('base').length ? document.getElementsByTagName('base')[0].href : '',
-		baseUrl = 'http://dev.welikepie.com/fffDev/',
+		baseUrl = 'http://dev.welikepie.com/teaTime/build/',
 		game = (function (undefined) {
 
 				// Will hold local participant ID, to mark which of the players

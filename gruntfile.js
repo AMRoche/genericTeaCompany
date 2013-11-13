@@ -108,7 +108,7 @@ module.exports = function (grunt) {
 
                 'clean': {
                         'build': { 'src': ['build'] },
-                        'release': { 'src': ['build/index.htm', 'build/styles'] }
+                        'release': { 'src': ['build/index.htm'] }
                 },
 
                 'copy': (function () {
@@ -131,7 +131,12 @@ module.exports = function (grunt) {
                                 'scripts': deep_copy('scripts/other/'),
                                 'images': deep_copy('images/'),
                                 'branding': deep_copy('branding/'),
-                                'styling': deep_copy('styles/', '**/*.!(less)'),
+                                'styles': {
+                                        'src': '*.css',
+                                        'dest': 'build/styles/',
+                                        'cwd': 'styles',
+                                        'expand': true
+                                },
                                 'audio':deep_copy('audio/'),
 
                                 'html-dev': { 'src': 'index.htm', 'dest': 'build/index.htm' },
@@ -140,7 +145,9 @@ module.exports = function (grunt) {
                                         'dest': 'build/index.htm',
                                         'options': {
                                                 'processContent': function (content) {
-                                                        return grunt.template.process(content
+                                                	var thing = "";
+                                                try{
+                                                	grunt.template.process(content
                                                                 .replace(
                                                                         /<link(?:[^>]*rel="stylesheet"[^>]*href="([^"]+)"[^>]*|[^>]*href="([^"]+)"[^>]*rel="stylesheet"[^>]*)>/gi,
                                                                         function (match, file) {
@@ -156,6 +163,8 @@ module.exports = function (grunt) {
                                                                         /<!--<base[^>]*>-->/i,
                                                                         "<base href=\"<%= pkg.app.baseUrl %>\">"
                                                                 ));
+                                                }catch(e){console.log(e.stack)}
+                                                        return thing;
                                                 }
                                         }
                                 },
@@ -175,7 +184,7 @@ module.exports = function (grunt) {
 
                 'watch': {
                         'less': {
-                                'files': 'styles/**/*.less',
+                                'files': 'styles/*.less',
                                 'tasks': ['recess:lint', 'recess:dev']
                         },
                         'js-main': {
@@ -202,7 +211,7 @@ module.exports = function (grunt) {
         grunt.loadNpmTasks('grunt-contrib-watch');
         grunt.loadNpmTasks('grunt-recess');
 
-        grunt.registerTask('copy-misc', ['copy:access', 'copy:data', 'copy:scripts', 'copy:images', 'copy:styling', 'copy:branding', 'copy:redirect']);
+        grunt.registerTask('copy-misc', ['copy:access', 'copy:data', 'copy:scripts', 'copy:images', 'copy:styles', 'copy:branding', 'copy:redirect']);
 
         grunt.registerTask('dev', ['clean:build', 'recess:lint', 'recess:dev', 'jshint:dev', 'concat', 'copy-misc', 'copy:html-dev','copy:audio', 'watch']);
         grunt.registerTask('dev-server', ['clean:build', 'recess:lint', 'recess:release', 'jshint:dev', 'concat', 'copy-misc', 'copy:html-release', 'copy:xml','copy:audio', 'clean:release']);

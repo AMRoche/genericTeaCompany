@@ -16,8 +16,8 @@ body header #textHeader {
 body header #textHeader h1 {
   display: block;
   width: 100%;
-  margin: 0;
-  font-size: 18px;
+  margin: 10px 0 0 -10px;
+  font-size: 22px;
   line-height: 48px;
   color: #FFFED7;
   text-align: center;
@@ -41,7 +41,7 @@ body #score > * {
   color: #5C0000;
   text-align: left;
   text-indent: 36px;
-  background: url('https://dev.welikepie.com/teaTime/build/images/counterb.png') no-repeat center bottom;
+  background: url('https://dev.welikepie.com:444/teaTime/build/images/counterb.png') no-repeat center bottom;
 }
 body #score > * .counter {
   position: absolute;
@@ -49,7 +49,7 @@ body #score > * .counter {
   display: block;
   width: 100px;
   height: 100px;
-  background: url('https://dev.welikepie.com/teaTime/build/images/counter_anim.png') no-repeat;
+  background: url('https://dev.welikepie.com:444/teaTime/build/images/counter_anim.png') no-repeat;
 }
 body #score > * .counter.step0 {
   background-position: 0 0;
