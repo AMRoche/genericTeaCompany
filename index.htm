@@ -5,9 +5,9 @@
 		<base href="<%=pkg.app.baseUrl %>">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-		<link rel="stylesheet" href="styles/bootstrap.css">
-		<link rel="stylesheet" href="styles/flat-ui.css">
-		<link rel="stylesheet" href="styles/styles.css">
+		<link rel="stylesheet" href="<%=pkg.app.baseUrl %>styles/bootstrap.css">
+		<link rel="stylesheet" href="<%=pkg.app.baseUrl %>styles/flat-ui.css">
+		<link rel="stylesheet" href="<%=pkg.app.baseUrl %>styles/styles.css">
 <!--[if lt IE 9]>
 
 <![endif]-->
@@ -20,9 +20,9 @@
 		Modernizr.load({
 			'load': [
 				'https://ssl.google-analytics.com/ga.js',
-				'https://hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=1.3',
-				'scripts/vendor.js?foo=3',
-				'scripts/scripts.js?foo=3'
+				'https://hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=1.4',
+				'scripts/vendor.js',
+				'scripts/scripts.js'
 			],
 			'complete': function complete () { domready(window.init); }
 		});
@@ -32,14 +32,15 @@
 		<div class="wrapper">
 
 			<header>
+				<img src="images/GenericTeaLogo.png">
 				<div id="textHeader">
 					<h1><%=pkg.app.title%></h1>
 				</div>
-				<img src="https://dev.welikepie.com:444/teaTime/build/images/logo.png">
+			
 			</header>
 			<section id="score">
-				<div id="local">0</div>
-				<div id="team">0</div>
+				<div id="local"><span>0</span></div>
+				<div id="team"><span>0</span></div>
 			</section>
 
 			<section id="controls">
@@ -48,7 +49,6 @@
 				<p class="gameover">Well done! To play again, press "play"!</p>
 				<p class="late">You have joined a game in progress. You can join the party when this round is over.</p>
 				<a href="https://plus.google.com/share?url=<%= encodeURIComponent('http://dev.welikepie.com/teabag-hangout/') %>" target="_blank" id="share">Share this application and teabag your friends!</a>
-				<a href="http://www.yorkshiretea.co.uk/about-tea/yorkshire-tea-how-to-make-a-proper-brew.php" target="_blank" id="community">Relax, and have a nice cup of tea.</a>
 			</section>
 
 			<!--<canvas id="physics_test"></canvas>-->

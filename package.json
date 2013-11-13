@@ -2,7 +2,7 @@
   "name": "teatime_hangout_app",
   "version": "0.0.1",
   "app": {
-    "title": "Share a Teabag with your friends!",
+    "title": "Share a Teabag with friends!",
     "appUrl": "",
     "baseUrl": "https://dev.welikepie.com:444/teaTime/build/",
     "hangoutUrl": "https://plus.google.com/hangouts/_?gid=222305755653"
