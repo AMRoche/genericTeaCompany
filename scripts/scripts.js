@@ -289,7 +289,7 @@ window.init = function () {
 				}
 			},
 			'createTracker': function createTracker () {
-
+				console.log(physics);
 				var tracker_position,
 					tracker_velocity,
 					tracker_angle,
@@ -359,7 +359,6 @@ window.init = function () {
 
 			},
 			'createBall': function createBall () {
-
 				var ball_position,
 					ball_velocity,
 					body_def = new Box2D.Dynamics.b2BodyDef(),
@@ -744,8 +743,8 @@ window.init = function () {
 			});
 
 			// Load audio resources
-			audio.bounce_res = gapi.hangout.av.effects.createAudioResource(baseUrl + "audio/bounceFinal.wav");
-			audio.fan_song_res = gapi.hangout.av.effects.createAudioResource(baseUrl + "audio/crowdSound8.wav");
+			audio.bounce_res = gapi.hangout.av.effects.createAudioResource(baseUrl + "audio/teaRoom.wav");
+			audio.fan_song_res = gapi.hangout.av.effects.createAudioResource(baseUrl + "audio/teabag.wav");
 			audio.fan_song_res.onLoad.add(function (ev) {
 				if (ev.isLoaded) {
 					audio.fan_song_res.play({
@@ -941,6 +940,7 @@ window.init = function () {
 						if (currentState === game.state.PLAYING) {
 							physics.createTracker();
 							physics.createBall();
+							//window.setInterval(physics.createBall(),2000);
 						}
 
 					}
