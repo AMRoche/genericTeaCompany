@@ -262,14 +262,14 @@ window.init = function () {
 		physics = {
 			'world': null,
 			'head_tracker': null,
-			'ball': null,
+			'ball': [null],
 			'track_joint': null,
 			'track_joint_def': null,
 			'movement_factor': 18,
 			'speedup_factor': speedFactor,
 			'rotateInterval': 20,
 			'rotateTimer': null,
-			'bounced': false,
+			'bounced': [false],
 			'scaling_map': {
 				0.06: 25,
 				0.09: 20,
@@ -277,7 +277,7 @@ window.init = function () {
 				0.2: 10
 			},
 			'last_scale': null,
-			'ball_overlay': null,
+			'ball_overlay': [null],
 			'ball_overlay_res': null,
 			'area_width': null,
 			'area_height': null,
@@ -364,11 +364,12 @@ window.init = function () {
 					body_def = new Box2D.Dynamics.b2BodyDef(),
 					fixture_def = new Box2D.Dynamics.b2FixtureDef();
 
-				if (physics.ball) {
-					ball_position = physics.ball.GetWorldCenter();
-					ball_velocity = physics.ball.GetLinearVelocity();
-					physics.world.DestroyBody(physics.ball);
-					physics.ball = null;
+				if (physics.ball[0]) {
+					ball_position = physics.ball[0].GetWorldCenter();
+					ball_velocity = physics.ball[0].GetLinearVelocity();
+					physics.world.DestroyBody(physics.ball[0]);
+					physics.ball[0] = null;
+					//physics.ball.splice(0,1);
 				}
 
 				if (physics.last_scale) {
@@ -397,19 +398,19 @@ window.init = function () {
 					fixture_def.shape.SetRadius(physics.unit_width * 1.25);
 					fixture_def.density = 10;
 
-					physics.ball = physics.world.CreateBody(body_def);
-					physics.ball.CreateFixture(fixture_def);
+					physics.ball[0] = physics.world.CreateBody(body_def);
+					physics.ball[0].CreateFixture(fixture_def);
 
 					_.each(['ball_overlay'], function (type) {
 
 						var resource = type + '_res';
 
-						if (physics[type]) {
-							physics[type].setScale(5 / physics.last_scale, gapi.hangout.av.effects.ScaleReference.WIDTH);
+						if (physics[type][0]) {
+							physics[type][0].setScale(5 / physics.last_scale, gapi.hangout.av.effects.ScaleReference.WIDTH);
 						} else {
 							if (physics[resource].isLoaded()) {
-
-								physics[type] = physics[resource].createOverlay({
+								
+								physics[type][0] = physics[resource].createOverlay({
 									'position' : {
 										'x' : (body_def.position.x / physics.area_width) - 0.5,
 										'y' : (body_def.position.y / physics.area_height) - 0.5
@@ -419,18 +420,18 @@ window.init = function () {
 										'reference' : gapi.hangout.av.effects.ScaleReference.WIDTH
 									}
 								});
-
+							
 							} else {
-
-								physics[type] = {
+								
+								physics[type][0]={
 									'setScale' : function() {},
 									'setPosition' : function() {},
 									'setVisible' : function() {}
 								};
-
+								
 								physics[resource].onLoad.add(function() {
-									var pos = physics.ball.GetWorldCenter();
-									physics[type] = physics[resource].createOverlay({
+									var pos = physics.ball[0].GetWorldCenter();
+									physics[type][0] = physics[resource].createOverlay({		
 										'position' : {
 											'x' : (pos.x / physics.area_width) - 0.5,
 											'y' : (pos.y / physics.area_height) - 0.5
@@ -440,7 +441,8 @@ window.init = function () {
 											'reference' : gapi.hangout.av.effects.ScaleReference.WIDTH
 										}
 									});
-									physics[type].setVisible(true);
+									physics[type][0].setVisible(true);
+									//physics[type][0].setVisible(true);
 								});
 
 							}
@@ -449,7 +451,9 @@ window.init = function () {
 					});
 
 				}
-
+				if(physics.ball.length>1){
+					physics.bounced.push(false);
+				}
 			},
 			'destroyTracker': function destroyTracker () {
 				if (physics.track_joint) {
@@ -460,17 +464,35 @@ window.init = function () {
 					physics.head_tracker = null;
 				}
 			},
+			'destroyBallIndex' : function destroyBallIndex(index){
+				console.log(index);
+				physics.ball_overlay[index].dispose();
+				physics.ball_overlay[index] = null;
+				//physics.ball_overlay[index].splice(0,1);
+				physics.world.DestroyBody(physics.ball[index]);
+				physics.ball_overlay[index].dispose();
+				physics.ball_overlay[index] = null;
+				//physics.ball_overlay[index].splice(0,1);
+				
+			},
 			'destroyBall': function destroyBall () {
-
-				if (physics.ball_overlay) {
+//				for(var i = 0; i < physics.ball_overlay.length; i++){
+				for(var i = 0; i < 1; i++){
+				if (physics.ball_overlay[i]) {
 					clearTimeout(physics.rotateTimer);
-					physics.ball_overlay.dispose();
-					physics.ball_overlay = null;
+					physics.ball_overlay[i].dispose();
+					physics.ball_overlay[i] = null;
+					//physics.ball_overlay.splice(0,1);
 				}
-				if (physics.ball) {
+				}
+//				for(var i = 0; i < physics.ball.length; i++){
+				for(var i = 0; i < 1; i++){
+				if (physics.ball[i]) {
 					clearTimeout(physics.rotateTimer);
-					physics.world.DestroyBody(physics.ball);
-					physics.ball = null;
+					physics.world.DestroyBody(physics.ball[i]);
+					physics.ball[i] = null;
+					//physics.ball.splice(0,1);
+				}
 				}
 			},
 			'createJoint': function createJoint () {
@@ -518,29 +540,34 @@ window.init = function () {
 				ball_pos;
 
 			if (game.state.get() === game.state.PLAYING) {
-
-				if (physics.ball) {
+			
+//			for(var i = 0; i < physics.ball.length; i++){
+			for(var i = 0; i < 1; i++){
+				
+				if (physics.ball[i]) {
 					var oldTime = 0;
-					ball_pos = physics.ball.GetWorldCenter();
-					ball_vel = physics.ball.GetLinearVelocity();
+					ball_pos = physics.ball[i].GetWorldCenter();
+					ball_vel = physics.ball[i].GetLinearVelocity();
 
-					if (physics.bounced === true) {
+					if (physics.bounced[i] === true) {
 						/*console.log("-----------------------");
 						console.log(physics.ball.GetLinearVelocity());*/
-						physics.ball.ApplyImpulse(new Vector(0, -20000 * physics.speedup_factor), physics.ball.GetWorldCenter());
+						physics.ball[i].ApplyImpulse(new Vector(0, -20000 * physics.speedup_factor), physics.ball[i].GetWorldCenter());
 						//console.log(new Vector(0,physics.speedup_factor*-100));
 						/*console.log(physics.ball.GetLinearVelocity());
 						console.log("-----------------------");*/
-						physics.bounced = false;
+						//console.log(physics.ball_overlay);
+						physics.bounced[i] = false;
 					}
 
-					if (physics.ball_overlay) {
-						physics.ball_overlay.setPosition((ball_pos.x / physics.area_width) - 0.5, (ball_pos.y / physics.area_height) - 0.5);
-
+					if (physics.ball_overlay[i]) {
+					
+						physics.ball_overlay[i].setPosition((ball_pos.x / physics.area_width) - 0.5, (ball_pos.y / physics.area_height) - 0.5);
 					}
 
 					if (ball_pos.y > physics.area_height * 1.25) {
-						game.state.set(game.state.LOST);
+						//DESTROY BALL HERE, SPLICE ARRAY, CHECK FOR LENGTH #~#
+							game.state.set(game.state.LOST);
 					}
 				}
 
@@ -551,7 +578,7 @@ window.init = function () {
 					window.requestAnimationFrame(tick);
 				}
 
-			}
+			}}
 
 		},
 
@@ -599,11 +626,15 @@ window.init = function () {
 						if (factor >= 1) {
 
 							try {
+								
 								init_overlay.setVisible(false);
 								init_overlay.dispose();
 								init_overlay = null;
-								if (physics.ball_overlay) {
-									physics.ball_overlay.setVisible(true);
+								//for(var j = 0; j < physics.ball_overlay.length; j++){
+								for(var j = 0; j < 1; j++){
+									if (physics.ball_overlay[j]) {
+										physics.ball_overlay[j].setVisible(true);
+									}
 								}
 							} catch (e) {}
 
@@ -633,14 +664,18 @@ window.init = function () {
 				// Reset the score
 				game.score.setLocal(0);
 
-				physics.createTracker();
-				physics.createBall();
+				//_.debounce(50,function(){
+					physics.createTracker();
+				    physics.createBall();
+				//});
 				try {
-					if (physics.ball_overlay) {
-						physics.ball_overlay.setVisible(false);
+//					for(var k = 0; k < physics.ball_overlay.length; k++){
+					for(var k = 0; k < 1; k++){
+						if (physics.ball_overlay[k]) {
+							physics.ball_overlay[k].setVisible(false);
+						}
 					}
-					init_overlay.setVisible(false);
-			
+					init_overlay.setVisible(false);			
 				} catch (e) {}
 				countdown_func(3);
 
@@ -855,20 +890,24 @@ window.init = function () {
 					delta, id;
 
 				if (
-					((bodyA === physics.head_tracker) && (bodyB === physics.ball)) ||
-					((bodyA === physics.ball) && (bodyB === physics.head_tracker))
+					((bodyA === physics.head_tracker) && (physics.ball.indexOf(bodyB)>-1 )) ||
+					((physics.ball.indexOf(bodyA)>-1) && (bodyB === physics.head_tracker))
 				) {
-
+					if(physics.ball.indexOf(bodyA)>-1){
+						bodyB = bodyA;
+					}
+					var indexInBall = physics.ball.indexOf(bodyB);
 					bodyA = physics.head_tracker;
-					bodyB = physics.ball;
+					
+					//bodyB = physics.ball;
 
 					// Only count downward-moving ball
 					if (bodyB.GetLinearVelocity().y > 0) {
 
 						game.score.setLocal(game.score.getLocal() + 1);
 
-						physics.lastVelocity = physics.ball.GetLinearVelocity();
-						physics.bounced = true;
+						physics.lastVelocity = physics.ball[indexInBall].GetLinearVelocity();
+						physics.bounced[indexInBall] = true;
 						audio.bounce_res.play({
 							localOnly : true,
 							loop : false,
@@ -881,11 +920,25 @@ window.init = function () {
 			};
 
 			contact.EndContact = function (contact) {
+				console.log(contact);
+					var bodyA ,bodyB, ball_velocity;
 
-				var bodyA = physics.head_tracker,
-					bodyB = physics.ball,
-					ball_velocity = physics.ball.GetLinearVelocity(),
-					new_velocity = physics.lastVelocity,
+				if(contact.m_fixtureA == physics.head_tracker)
+				{
+					var indexOf = physics.ball.indexOf(contact.m_fixtureB);
+					bodyA = physics.head_tracker; 
+					bodyB = physics.ball[indexOf];
+					console.log(indexOf);
+					ball_velocity = physics.ball[indexOf].GetLinearVelocity();
+				}	
+				else{
+					var indexOf = physics.ball.indexOf(contact.m_fixtureA);
+					bodyA = physics.head_tracker; 
+					bodyB = physics.ball[indexOf];
+					console.log(indexOf);
+					ball_velocity = physics.ball[indexOf].GetLinearVelocity();
+				}
+					var new_velocity = physics.lastVelocity,
 					temp = ball_velocity.Length();
 
 				window.clearInterval(physics.rotateTimer);
@@ -923,7 +976,8 @@ window.init = function () {
 
 					// Calculate the scale (and adjust object accordingly if scale is different from previous frame)
 					scale = Math.abs(faceData.leftEye.x - faceData.rightEye.x);
-					for (i = 0; i < scaling_keys.length; i += 1) {
+					//for (i = 0; i < scaling_keys.length; i++) {
+					for (i = 0; i < 1; i++) {
 						if (scaling_keys[i] <= scale && scaling_keys[i] > biggest_scale) {
 							biggest_scale = scaling_keys[i];
 						}
@@ -938,8 +992,10 @@ window.init = function () {
 						physics.unit_height = physics.area_height / physics.last_scale;
 
 						if (currentState === game.state.PLAYING) {
-							physics.createTracker();
-							physics.createBall();
+							//_.debounce(50,function(){
+								physics.createTracker();
+								physics.createBall();
+							//});
 							//window.setInterval(physics.createBall(),2000);
 						}
 
