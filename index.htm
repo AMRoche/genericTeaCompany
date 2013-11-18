@@ -21,8 +21,8 @@
 			'load': [
 				'https://ssl.google-analytics.com/ga.js',
 				'https://hangoutsapi.talkgadget.google.com/hangouts/api/hangout.js?v=1.4',
-				'scripts/vendor.js',
-				'scripts/scripts.js'
+				'<%=pkg.app.baseUrl %>scripts/vendor.js',
+				'<%=pkg.app.baseUrl %>scripts/scripts.js'
 			],
 			'complete': function complete () { domready(window.init); }
 		});

@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "app": {
     "title": "Share a Teabag with friends!",
-    "appUrl": "",
-    "baseUrl": "https://dev.welikepie.com:444/teaTime/build/",
+    "appUrl": "https://plus.google.com/hangouts/_?gid=222305755653",
+    "baseUrl" : "https://teabag-yourself.googlecode.com/git/build/",
+    "baseUrl2": "https://dev.welikepie.com:444/teaTime/build/",
     "hangoutUrl": "https://plus.google.com/hangouts/_?gid=222305755653"
   },
   "devDependencies": {
